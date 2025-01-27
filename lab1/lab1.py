@@ -4,7 +4,7 @@ SID: 100590852
 email: syedm.naqvi@ontariotechu.net
 """
 
-import pygame, sys
+import pygame, sys, os
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -30,9 +30,8 @@ class MyCircle(pygame.sprite.Sprite):
         self.image = pygame.Surface([width, height])
         self.rect = self.image.get_rect()
         self.image.fill(WHITE)
-        cx = self.rect.centerx
-        cy = self.rect.centery
-        pygame.draw.circle(self.image, color, (width//2, height//2), cx, cy)
+        r = self.rect.centerx # radius of the circle
+        pygame.draw.circle(self.image, color, (width//2, height//2), r, 0)
         self.rect = self.image.get_rect()
 
     def update(self):
@@ -56,6 +55,7 @@ class Simulation:
 
         self.times = [self.cur_time*1000]
         self.positions = [self.y]
+        self.velocities = [self.vy]
 
     def step(self):
         self.y += self.vy
@@ -64,6 +64,7 @@ class Simulation:
 
         self.times.append(self.cur_time * 1000)
         self.positions.append(self.y)
+        self.velocities.append(self.vy)
 
     def pause(self):
         self.paused = True
@@ -93,13 +94,31 @@ def main():
     my_group = pygame.sprite.Group(my_sprite)
 
     # setting up simulation
-    sim = Simulation()
-    sim.setup(460, 0, 1)
+    if (os.path.exists("./ball_fall_data.txt")):
+        
+        file = open("./ball_fall_data.txt", "r")
+        times = list(map(float, file.readline().strip().split(",")))
+        positions = list(map(float, file.readline().strip().split(",")))
+        velocities = list(map(float, file.readline().strip().split(",")))
+        file.close()
+        
+        sim = Simulation()
+        sim.setup(positions[-1], velocities[-1], 1)
+        sim.cur_time = times[-1]/1000
+        sim.times = times
+        sim.positions = positions
+        sim.velocities = velocities
+    
+    else:
+        
+        sim = Simulation()
+        sim.setup(460, 0, 1)
 
     print ('--------------------------------')
     print ('Usage:')
     print ('Press (r) to start/resume simulation')
     print ('Press (p) to pause simulation')
+    print ('Press (q) to end simulation, plot results and save results to file')
     print ('Press (space) to step forward simulation when paused')
     print ('--------------------------------')
 
@@ -123,6 +142,24 @@ def main():
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_r:
             sim.resume()
             continue
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_q:
+            file = open("./ball_fall_data.txt", "w")
+            
+            times = ",".join(map(str,sim.times))
+            times += "\n"
+            file.write(times)
+            
+            positions = ",".join(map(str,sim.positions))
+            positions += "\n"
+            file.write(positions)
+            
+            velocities = ",".join(map(str,sim.velocities))
+            velocities += "\n"
+            file.write(velocities)
+                        
+            file.close()
+            pygame.quit()
+            break
         else:
             pass
 
@@ -133,6 +170,8 @@ def main():
         pygame.display.flip()
 
         if sim_to_screen_y(win_height, sim.y) > win_height:
+            if(os.path.exists("./ball_fall_data.txt")):
+                os.remove("./ball_fall_data.txt")
             pygame.quit()
             break
 
@@ -146,6 +185,8 @@ def main():
     # Lets move our lists to numpy array
     # first row contains times, second row contains positions
     pos_vs_times = np.vstack([sim.times, sim.positions])
+    # first row contains times second row contains velocities
+    vel_vs_times = np.vstack([sim.times, sim.velocities])
 
     # Using matplotlib to plot simulation data
     plt.figure(1)
@@ -154,6 +195,15 @@ def main():
     plt.ylabel('y position')
     plt.title('Height vs. Time')
     plt.show()
+    
+    plt.figure(1)
+    plt.plot(vel_vs_times[0,:], vel_vs_times[1,:])
+    plt.xlabel('Time (ms)')
+    plt.ylabel('vy velocity')
+    plt.title('Vertical Velocity vs. Time')
+    plt.show()    
+
+    sys.exit(0)
 
 if __name__ == '__main__':
     main()
