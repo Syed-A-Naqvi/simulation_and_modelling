@@ -1,0 +1,34 @@
+\documentclass{article}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{makecell}
+\usepackage{multirow}
+
+\begin{document}
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        \textbf{Angle} & \makecell{\textbf{Initial Velocity:}\\\textbf{50}} & \makecell{\textbf{Initial Velocity:}\\\textbf{60}} & \makecell{\textbf{Initial Velocity:}\\\textbf{70}} \\
+        \hline
+        15 Degree & 129.08 & 185.49 & 252.09 \\
+        \hline
+        30 Degree & 221.43 & 318.84 & 433.96 \\
+        \hline
+        45 Degree & \textbf{255.42} & \textbf{368.06} & \textbf{501.20} \\
+        \hline
+        60 Degree & 221.00 & 318.61 & 432.86 \\
+        \hline
+        75 Degree & 127.63 & 183.86 & 250.34 \\
+        \hline
+        90 Degree & 0.00 & 0.00 & 0.00 \\
+        \hline
+        \makecell{Angle corresponding\\to largest $r$} & 45° & 45° & 45° \\
+        \hline
+    \end{tabular}
+    \caption{Projectile ranges (r) for various angles and initial velocities}
+    \label{tab:projectile_ranges}
+\end{table}
+
+\end{document}
