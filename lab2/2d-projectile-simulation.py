@@ -64,8 +64,7 @@ class Simulation:
         self.vx = speed*np.cos(angle_degrees*(np.pi/180))
         self.vy = speed*np.sin(angle_degrees*(np.pi/180))
         self.solver.set_initial_value([self.x, self.y, self.vx, self.vy], self.curr_time)
-        
-        # print(f"vx = {self.vx}, vy = {self.vy}")
+    
         
         self.trace_x = [self.x]
         self.trace_y = [self.y]
@@ -180,6 +179,8 @@ def main():
 
             print(f"angle = {angle}, speed = {speed}, r = {sim.trace_x[-1]}")
 
+    print()
+    pygame.quit()
     sys.exit()
 
 if __name__ == '__main__':
