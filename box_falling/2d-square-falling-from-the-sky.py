@@ -43,8 +43,28 @@ class RigidBody:
 
     def f(self, t, state, force, torque, IbodyInv):
         rate = np.zeros(19)
-
-        # TO DO
+        
+        # computing derived velocities directly from current state
+        v = state[12:15]/self.mass
+        omega = np.matmul(IbodyInv, state[15:18])
+        
+        # rate of change in position (dx/dt) is current computed velocity
+        rate[0:3] = v
+        
+        # current rotation matrix
+        R = state[3:12].reshape([3,3])
+        # rate of change in rotation matrix based on angular velocity
+        dRdt = np.matmul(self.star(omega), R)
+        rate[3:12] = dRdt.reshape([1,9])
+        
+        # rate of change in linear momentum is force
+        rate[12:15] = force
+        
+        # rate of change in anuglar momentum is torque
+        rate[15:18] = torque
+        
+        # rate of change in time with respect to itself is 1
+        rate[18] = 1
 
         return rate
 
