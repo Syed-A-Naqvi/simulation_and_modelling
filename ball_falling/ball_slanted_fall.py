@@ -26,7 +26,7 @@ print ('floor_normal', floor_normal)
 
 # Setup figure
 fig = plt.figure(1)
-ax = plt.axes(xlim=(-300, 300), ylim=(-100, 110))
+ax = plt.axes(xlim=(0, 300), ylim=(-75, 110))
 plt.grid()
 line, = ax.plot([], [], '-')
 time_template = 'time = %.1fs'
@@ -99,7 +99,7 @@ class Ball:
         self.dt = 0.01
         self.t = 0
         self.mass = 1
-        self.friction = 0.0001
+        self.friction = 0.001
 
         self.r = ode(self.f)
         self.r.set_integrator('dop853')
